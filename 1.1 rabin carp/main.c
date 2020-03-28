@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "RabinCarp.c"
+#include "header.h"
 
 int main(int argc, char *argv[]) {
     char example[16];

@@ -1,3 +1,4 @@
+#include "header.h"
 int power(int b,int n) {
     int a = 1;
     while (n != 0) {
