@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "heapsort.c"
+#include "header.h"
 
 int main(int argc, char** argv) {
     int count;

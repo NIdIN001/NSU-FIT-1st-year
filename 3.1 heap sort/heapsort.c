@@ -1,3 +1,4 @@
+#include "header.h"
 void rebuild_heap(int *array, int n, int i) {
     int rude_index = i;
 // Инициализируем наибольший элемент как корень
