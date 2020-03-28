@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "quene.c"
-#include "DFS.c"
+#include "header.h"
 
 int main() {
     int vertex = 0;

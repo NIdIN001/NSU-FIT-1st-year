@@ -1,3 +1,5 @@
+#include "header.h"
+
 void DFS(int x,int* visited,int vertex, int array[][vertex]) { //обход графа в глубину
     if (visited[x] == 2) {
         return;

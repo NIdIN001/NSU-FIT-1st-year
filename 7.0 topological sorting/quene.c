@@ -1,11 +1,5 @@
+#include "header.h"
 //описание очереди
-typedef struct Node{
-    int value;
-    struct Node* next;
-}Node;
-Node* first;
-Node* last;
-
 void create() {
     first = NULL;
     last = NULL;
