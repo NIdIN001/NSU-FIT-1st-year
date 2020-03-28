@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "Header.h"
+#include "quick sort.c"
 
 int main(int argc, char *argv[]) {
 //int n = atoi(argv[1]);
