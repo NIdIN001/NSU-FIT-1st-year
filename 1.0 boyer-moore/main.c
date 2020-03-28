@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <locale.h>
-#include "boyer-moore.c"
+#include <string.h>
+#include "header.h"
 
 int main(int argc, char *argv[]) {
     setlocale(0,"");

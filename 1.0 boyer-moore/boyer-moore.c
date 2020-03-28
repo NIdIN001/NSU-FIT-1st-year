@@ -1,4 +1,4 @@
-#include <string.h>
+#include "header.h"
 
 void table_(size_t ex_size, char example[], int ascii[]) {
     for (int i = 0; i < 256; i++) {
