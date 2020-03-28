@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "dijkstra.c"
+#include "header.h"
 
 int main() {
     char input[11];
