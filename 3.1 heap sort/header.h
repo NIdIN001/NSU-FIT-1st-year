@@ -4,6 +4,7 @@
 
 #ifndef LABA3_1_HEADER_H
 #define LABA3_1_HEADER_H
+#include <stdio.h>
 void rebuild_heap(int *array, int n, int i);
 void heapSort(int *array, int n);
 
