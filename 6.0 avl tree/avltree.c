@@ -17,7 +17,7 @@ int Balance(node* root) {
 }
 
 node* Create(int value) {
-    node *new = (node *) malloc(sizeof(node *));
+    node *new = (node *) malloc(sizeof(node));
     new->value = value;
     new->right = NULL;
     new->left = NULL;
