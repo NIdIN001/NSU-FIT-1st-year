@@ -89,14 +89,5 @@ node* Addnode(int value,node* root) {
 }
 
 int Heightoftree(node* root) {
-    node *temp = root;
-    int h1 = 0;
-    int h2 = 0;
-    if (root == NULL)
-        return 0;
-    if (root->left)
-        h1 = Height(root->left);
-    if (root->right)
-        h2 = Height(root->right);
-    return (max(h1, h2) + 1);
+    return (Height(root) + 1);
 }
