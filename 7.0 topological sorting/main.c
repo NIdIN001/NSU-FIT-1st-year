@@ -48,13 +48,4 @@ int main() {
     for (int i = 0; i < vertex; i++) {
         printf(" %d", pop() + 1);
     }
-
-/*
-    for (int i = 0; i < vertex; i++) {
-        for (int j = 0; j < vertex; j++) {
-            printf(" %d", array[j][i]);
-        }
-        printf("\n");
-    }
-*/
 }
