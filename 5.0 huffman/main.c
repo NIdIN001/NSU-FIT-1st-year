@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include "huffman.c"
+#include "header.h"
 
 int main(int argc, char**argv) {
 
@@ -63,7 +63,6 @@ int main(int argc, char**argv) {
         fclose(input);
 
     return 0;
-
 
 /*
     //FILE *input = fopen("input.txt", "rt");

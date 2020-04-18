@@ -1,16 +1,4 @@
-typedef struct node {
-    unsigned int weight;
-    unsigned char value;
-    struct node *left;
-    struct node *right;
-    struct node *parent;
-}Tnode;
-typedef struct list{
-    unsigned char value;
-    char code[8];
-}Tlist;
-
-int count = 0;
+#include "header.h"
 
 int make_signs(int* signs,FILE* input) {
     int c;
@@ -203,7 +191,7 @@ void code(FILE *input, FILE *output) {
     int nulls = coder(codes, input, output);
     make_log(root, nulls);
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Tnode* new_node(unsigned char value) {
     Tnode *new = (Tnode *) malloc(sizeof(Tnode));
     new->value = value;
@@ -273,7 +261,8 @@ void decoder(Tnode *const_root,FILE* input, FILE* output, int nulls) {
     }
 
 
-    fscanf(input, "%c", &symbol);
+    if(fscanf(input, "%c", &symbol) != 1)
+        return;
     char_to_bit(symbol, buffer);
 
     while (!feof(input)) {
@@ -300,7 +289,8 @@ void decoder(Tnode *const_root,FILE* input, FILE* output, int nulls) {
         if (bitpos == 8) {
             bitpos = 0;
             memset(buffer, 0, sizeof(int) * 8);
-            fscanf(input, "%c", &symbol);
+            if(fscanf(input, "%c", &symbol) != 1)
+                return;
 
             int tmp = fgetc(input);
             fseek(input, -1, SEEK_CUR);
@@ -321,7 +311,8 @@ void decode(FILE* input, FILE* output) {
     FILE *log = fopen("log.txt", "rb");
 
     unsigned char tree[1000] = {0};
-    fscanf(log, "%s", tree);
+    if (fscanf(log, "%s", tree) != 1)
+        return;
     size_t tree_len = strlen(tree);
 
     Tnode *root = remake_tree(tree_len - 1, tree);
