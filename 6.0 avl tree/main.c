@@ -16,4 +16,5 @@ int main() {
     }
 
     printf("%d", Height(root));
+    Delete_tree(root);
 }
