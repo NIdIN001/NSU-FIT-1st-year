@@ -6,7 +6,7 @@ int main() {
     node *root = NULL;
     int nodes = 0;
     if (scanf("%d", &nodes) != 1)
-        return 0;
+        return 1;
     
     if (nodes == 0) {
         printf("0");
@@ -16,7 +16,7 @@ int main() {
     for (int i = 0; i < nodes; i++) {
         int value = 0;
         if (scanf("%d", &value) != 1)
-            return 0;
+            return 1;
         root = Addnode(value, root);
     }
 
