@@ -22,5 +22,6 @@ Tnode* Create(int value);
 Tnode* LeftRotate(Tnode* z);
 Tnode* RightRotate(Tnode* z);
 Tnode* Addnode(int value,Tnode* root);
+void Delete_tree(Tnode* root);
 
 #endif //LABA6_HEADER_H
