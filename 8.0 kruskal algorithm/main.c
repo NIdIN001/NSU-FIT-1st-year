@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-#include <stdlib.h>
 #include "header.h"
 
 int main() {
@@ -43,10 +42,10 @@ int main() {
 
     Tnode out[lines];
     memset(out, 0, sizeof(Tnode) * lines);
-    struct frame ret = frame(edges, out, lines, vertex);
+    struct result result = frame(edges, out, lines, vertex);
 
-    if (ret.is_ok == 0) {
-        for (int i = 0; i < ret.count; i++) {
+    if (result.is_ok == 0) {
+        for (int i = 0; i < result.count; i++) {
             printf("%d %d\n", out[i].fp, out[i].sp);
         }
     } else {
