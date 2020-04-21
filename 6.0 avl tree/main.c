@@ -3,15 +3,10 @@
 #include "header.h"
 
 int main() {
-    node *root = NULL;
+    Tnode *root = NULL;
     int nodes = 0;
     if (scanf("%d", &nodes) != 1)
         return 1;
-    
-    if (nodes == 0) {
-        printf("0");
-        return 0;
-    }
 
     for (int i = 0; i < nodes; i++) {
         int value = 0;
@@ -20,5 +15,5 @@ int main() {
         root = Addnode(value, root);
     }
 
-    printf("%d", Heightoftree(root));
+    printf("%d", Height(root));
 }
