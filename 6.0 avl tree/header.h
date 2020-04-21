@@ -8,21 +8,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct node{
+typedef struct node {
     int value;
     int height;
-    struct node* left;
-    struct node* right;
-}node;
+    struct node *left;
+    struct node *right;
+}Tnode;
 
 int max(int a, int b);
-int Height(node* root);
-int Value(node* root);
-int Balance(node* root);
-node* Create(int value);
-node* LeftRotate(node* z);
-node* RightRotate(node* z);
-node* Addnode(int value,node* root);
-int Heightoftree(node* root);
+int Height(Tnode* root);
+int Balance(Tnode* root);
+Tnode* Create(int value);
+Tnode* LeftRotate(Tnode* z);
+Tnode* RightRotate(Tnode* z);
+Tnode* Addnode(int value,Tnode* root);
 
 #endif //LABA6_HEADER_H
