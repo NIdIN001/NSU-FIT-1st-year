@@ -81,3 +81,13 @@ Tnode *Addnode(int value, Tnode *root) {
     }
     return root;
 }
+
+void Delete_tree(Tnode* root) {
+    if (root->left != NULL) {
+        Delete_tree(root->left);
+    }
+    if (root->right != NULL) {
+        Delete_tree(root->right);
+    }
+    free(root);
+}
