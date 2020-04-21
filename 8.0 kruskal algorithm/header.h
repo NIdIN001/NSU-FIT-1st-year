@@ -16,12 +16,12 @@ typedef struct Node{
     int leight;
 }Tnode;
 
-struct frame{
+struct result{
     int is_ok;
     int count;
 };
 
 int compare(const void* a, const void* b);
-struct frame frame(Tnode edges[],Tnode out[], int lines, int vertex);
+struct result frame(Tnode edges[],Tnode out[], int lines, int vertex);
 
 #endif //LABA8_0_HEADER_H
