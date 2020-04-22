@@ -22,7 +22,7 @@ int main() {
     }
 
     while (n != 0) {
-        dijkstra(arr, size);
+        Narayana(arr, size);
         n--;
         for (size_t i = 0; i < size; i++)
             printf("%d", arr[i]);
