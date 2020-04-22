@@ -26,7 +26,7 @@ void bad_input_check(int* arr, int size) {
         }
     }
 }
-void dijkstra(int* arr, size_t size) {
+void Narayana(int* arr, size_t size) {
     int pivot = -1;
     size_t pivot_place = 0;
     int min = 10;
