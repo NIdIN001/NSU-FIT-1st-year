@@ -9,5 +9,5 @@
 #include <string.h>
 void swap(int *x, int *y);
 void bad_input_check(int* arr, int size);
-void dijkstra(int* arr, size_t size);
+void Narayana(int* arr, size_t size);
 #endif //LABA2_HEADER_H
