@@ -20,8 +20,9 @@ struct result frame(Tnode edges[],Tnode out[], int lines, int vertex) {
             out[count] = edges[i];
             count++;
             for (int j = 0; j < vertex; j++) {
-                if (color[j] == color[edges[i].sp - 1]) {
+                if ((color[j] == color[edges[i].sp - 1]) || (color[j] == color[edges[i].fp - 1])) {
                     color[j] = color[edges[i].fp - 1];
+                    color[j] = color[edges[i].sp - 1];
                 }
             }
         }
