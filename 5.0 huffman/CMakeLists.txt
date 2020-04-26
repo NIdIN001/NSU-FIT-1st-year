@@ -3,4 +3,4 @@ project(laba5 C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(laba5 main.c header.h huffman.c)
+add_executable(laba5 main.c huffman.c)
