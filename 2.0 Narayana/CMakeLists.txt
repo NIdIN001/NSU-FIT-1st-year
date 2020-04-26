@@ -3,4 +3,4 @@ project(laba2 C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(laba2 main.c header.h narayana.c)
+add_executable(laba2 main.c narayana.c)
