@@ -30,7 +30,6 @@ int char_to_int_(char tmp_number[]) {
 void to_infix(char expression[],char polski[]) {
     size_t j = 0;
     char tmp = 0;
-
     int last_operation = 0; // 1 - push 2 - in polski
 
     if ((expression[strlen(expression) - 1] > '9') ||
@@ -39,7 +38,6 @@ void to_infix(char expression[],char polski[]) {
 
     if (((expression[0] > '9') || (expression[0] < '0')) && (expression[0] != '('))
         syntax_error(); // если первый символ выражения sign, но не открывающая скобка - бан
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     for (size_t i = 0; i < strlen(expression); i++) {
         if (isdigit(expression[i])) {
@@ -57,8 +55,6 @@ void to_infix(char expression[],char polski[]) {
                     break;
 
                 case ')':
-
-
                     if (polski[j - 1] != '.') {
                         polski[j] = '.';
                         j++;
@@ -126,7 +122,6 @@ int calculator(char polski[]) {
     int tmp_result = 0;
     int a = 0;
     int b = 0;
-
     int count_signs = 0;
     int counter_numbers = 0;
 
@@ -148,7 +143,7 @@ int calculator(char polski[]) {
 
     if (strlen(polski) == 0) {
         syntax_error();
-    } // если пусто - бан
+    } 
 
     char number[1100];
 
@@ -163,8 +158,6 @@ int calculator(char polski[]) {
             number[j] = 0;
 
             push_int(&head_int, char_to_int_(number));
-
-
         } else {
             switch (polski[i]) {
                 case '+':
@@ -210,7 +203,6 @@ int calculator(char polski[]) {
     }
     if (head_int->next == NULL)
         return pop_int(&head_int);
-    else syntax_error(); //Большие числа банятся на этом моменте из-за того что умеет складывать только
-    // по одной цифре и в стеке остаюстся еще цифры от большого числа
+    else syntax_error(); 
     return 0; //никогда не будет использоваться, просто чтобы не было error (тк не пройдет условие выше)
 }
