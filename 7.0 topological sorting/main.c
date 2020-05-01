@@ -4,21 +4,25 @@
 #include "header.h"
 
 int main() {
-    int vertex = 0;
-    if (scanf("%d", &vertex) != 1) //кол-во вершин
+    int vertex = -1;
+    if (scanf("%d", &vertex) != 1) {
+        printf("bad number of lines");
         return 0;
-    int lines = 0;
-    if (scanf("%d", &lines) != 1) // кол-во ребер
+    }
+    int lines = -1;
+    if (scanf("%d", &lines) != 1) {
+        printf("bad number of lines");
         return 0;
+    }
 
-    if ((vertex < 0) || (vertex > 1000)){
+    if ((vertex < 0) || (vertex > 1000)) {
         printf("bad number of vertices");
-        return 1;
+        return 0;
     }
 
     if ((lines < 0) || (lines > (vertex * (vertex - 1) / 2))){
         printf("bad number of edges");
-        return 1;
+        return 0;
     }
 
     int array[vertex][vertex];
@@ -27,11 +31,19 @@ int main() {
     for (int i = 0; i < lines; i++) {
         int a = -1;
         int b = 0;
-        if (scanf("%d%d", &a, &b) != 2)
+        if (scanf("%d%d", &a, &b) != 2){
+            printf("bad number of lines");
             return 0;
-        if (a == b) {
-            return 9;
         }
+        if (a == b) {
+            printf ("impossible to sort");
+            return 0;
+        }
+        if ((a > vertex) || (b > vertex) || (a < 0) || (b < 0)){
+            printf("bad vertex");
+            return 0;
+        }
+
         array[a - 1][b - 1] = 1; // тк первый элемент 0-0 я деляю его 1-1, тк так привычнее
     }
 
@@ -48,4 +60,13 @@ int main() {
     for (int i = 0; i < vertex; i++) {
         printf(" %d", pop() + 1);
     }
+
+/*
+    for (int i = 0; i < vertex; i++) {
+        for (int j = 0; j < vertex; j++) {
+            printf(" %d", array[j][i]);
+        }
+        printf("\n");
+    }
+*/
 }
