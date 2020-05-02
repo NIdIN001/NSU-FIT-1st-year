@@ -27,6 +27,7 @@ int pop() {
         exit(EXIT_FAILURE);
     }
     int a = first->value;
+    free(first);
     first = first->next;
     return a;
 }
