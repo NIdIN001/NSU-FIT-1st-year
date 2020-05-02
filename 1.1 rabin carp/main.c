@@ -3,24 +3,27 @@
 #include "header.h"
 
 int main(int argc, char *argv[]) {
-    char example[16];
-    char text[100];
+    char example[18];
+    char text[1000];
 
     FILE *input = NULL;
 
     if (argc == 2)
         input = fopen(argv[1], "rt");
+    //input = fopen("input.txt", "rb");
 
     if (input == NULL) {
-        if (fgets(example, 16, stdin) == 0)
+        if (fgets(example, 18, stdin) == 0)
             return 0;
-        if (fgets(text, 100, stdin) == 0)
+        if (fgets(text, 1000, stdin) == 0)
             return 0;
     } else {
-        if (fgets(example, 16, input) == 0)
+        if (fgets(example, 18, input) == 0)
             return 0;
-        if (fgets(text, 100, input) == 0)
+        if (fgets(text, 1000, input) == 0) {
+            printf("0");
             return 0;
+        }
     }
 
     if (example[strlen(example) - 1] == '\n')
