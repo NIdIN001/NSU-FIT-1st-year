@@ -75,7 +75,7 @@ Tnode* make_huff_tree(int* signs) {
     return array[0];
 }// построил дерево разбора
 
-unsigned char bit_to_char(unsigned char bitbuf[], int bitcount) {
+unsigned char bit_to_char(unsigned char bitbuf[]) {
     unsigned char result = 0;
     for (int i = 0, j = 7; i < 8; i++, j--) {
         if (bitbuf[i] == '1') {
@@ -95,11 +95,11 @@ int coder(Tlist* codes,FILE* input,FILE* output) {
             continue;
         for (int j = 0; j < count; j++) {
             if (codes[j].value == c) {
-                for (int l = 0; l < strlen(codes[j].code); l++) {
+                for (size_t l = 0; l < strlen(codes[j].code); l++) {
                     bitbuf[bitcount] = codes[j].code[l];
                     bitcount++;
                     if (bitcount == 8) {
-                        fprintf(output, "%c", bit_to_char(bitbuf, bitcount));
+                        fprintf(output, "%c", bit_to_char(bitbuf));
                         bitcount = 0;
                         memset(bitbuf, 0, sizeof(unsigned char) * 8);//посмотреть на парашу
                     }
@@ -120,7 +120,7 @@ int coder(Tlist* codes,FILE* input,FILE* output) {
 
     }
     if (nulls != 0) {
-        fprintf(output, "%c", bit_to_char(bitbuf, bitcount));
+        fprintf(output, "%c", bit_to_char(bitbuf));
     }
     return nulls;
 }
@@ -198,7 +198,7 @@ Tnode* new_node(unsigned char value) {
 Tnode* remake_tree(size_t tree_len,char* tree) {
     Tnode *root = new_node(0);
     unsigned char c;
-    int i = 0;
+    size_t i = 0;
     while (i < tree_len) {
         c = tree[i];
         i++;
@@ -310,11 +310,13 @@ void decode(FILE* input, FILE* output, FILE *log) {
 
     Tnode *root = remake_tree(tree_len - 1, tree);
 
-    for (int i = 0; i < tree_len; i++) {
+    for (size_t i = 0; i < tree_len; i++) {
         tree[i] = 0;
     }
     fseek(log, 1, SEEK_CUR);
-    fread(tree, 1, 1000, log);
+    if (fread(tree, 1, 1000, log) == 9999){
+        return;
+    }
 
     int nulls = tree[strlen(tree) - 1] - 48;
 
