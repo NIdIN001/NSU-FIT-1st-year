@@ -1,41 +1,30 @@
+//
+// Created by Станислав Уточкин on 06.05.2020.
+//
 #include "header.h"
 
-int make_signs(int* signs,FILE* input) {
+size_t make_signs(FILE* input, int* letters_count) {
     int c;
-    int signscount = 0;
+    size_t text_len = 0;
     while (!feof(input)) {
         c = fgetc(input);
         if (c == -1)
             continue;
-        signs[c]++;
-        if (signs[c] == 1)
-            signscount++;
+        letters_count[c]++;
+        text_len++;
     }
-    return signscount;
+    return text_len;
 }
 
-void make_table(Tnode *root, Tlist codes[],char path[256], int level,int signscount) {
-    if (signscount == 1) {
-        codes[count].value = root->value;
-        memcpy(codes[count].code, path, 1);
-        count++;
-        return;
+void delete_tree(Tnode* root) {
+    if (root->left != NULL) {
+        delete_tree(root->left);
     }
-
-    if (root->value == 0) {
-        if (root->left != NULL) {
-            path[level] = '0';
-            make_table(root->left, codes, path, level + 1, signscount);
-        }
-        if (root->right != NULL) {
-            path[level] = '1';
-            make_table(root->right, codes, path, level + 1, signscount);
-        }
-    } else {
-        codes[count].value = root->value;
-        memcpy(codes[count].code, path, level);
-        count++;
+    if (root->right != NULL) {
+        delete_tree(root->right);
     }
+    if ((root->left == NULL) && (root->right == NULL))
+        free(root);
 }
 
 Tnode* make_huff_tree(int* signs) {
@@ -73,258 +62,172 @@ Tnode* make_huff_tree(int* signs) {
         count--;
     }
     return array[0];
-}// построил дерево разбора
-
-unsigned char bit_to_char(unsigned char bitbuf[]) {
-    unsigned char result = 0;
-    for (int i = 0, j = 7; i < 8; i++, j--) {
-        if (bitbuf[i] == '1') {
-            result = (unsigned char)(result + pow(2, j));
-        }
-    }
-    return result;
 }
 
-int coder(Tlist* codes,FILE* input,FILE* output) {
-    unsigned char bitbuf[8] = {0};
-    int bitcount = 0;
+void save_huffman_tree(Tnode* root, unsigned int* total_bitpos, unsigned char* outbuf) {
+    if (root->left) {
+        outbuf[*total_bitpos / 8] |= 128u >> ((*total_bitpos) % 8);
+        *total_bitpos += 1;
+
+        save_huffman_tree(root->left, total_bitpos, outbuf);
+        save_huffman_tree(root->right, total_bitpos, outbuf);
+    } else {
+        unsigned int bitpos;
+        *total_bitpos += 1;
+        bitpos = (*total_bitpos) % 8;
+        if (bitpos == 0) {
+            outbuf[*total_bitpos / 8] = root->value;
+        } else {
+            outbuf[*total_bitpos / 8] |= root->value >> bitpos;
+            outbuf[*total_bitpos / 8 + 1] |= root->value << (8 - bitpos);
+        }
+        *total_bitpos += 8;
+    }
+}
+
+void make_huff_table(Tnode *root, unsigned char *code[256], unsigned char path[256], unsigned int level) {
+    if (root->value == 0) {
+        if (root->left != NULL) {
+            path[level] = '0';
+            make_huff_table(root->left, code, path, level + 1);
+        }
+        if (root->right != NULL) {
+            path[level] = '1';
+            make_huff_table(root->right, code, path, level + 1);
+        }
+    } else {
+        code[root->value] = (unsigned char *) malloc(sizeof(unsigned char) * level);
+        memcpy(code[root->value], path, level);
+    }
+}
+
+void write_encode(FILE *input, FILE *output, unsigned int *total_bitpos, unsigned char *outbuf, unsigned char *code[256]) {
+    unsigned int bytepos = *total_bitpos / 8;
+    unsigned int bitpos = *total_bitpos % 8;
     int c;
+
     while (!feof(input)) {
         c = fgetc(input);
         if (c == -1)
             continue;
-        for (int j = 0; j < count; j++) {
-            if (codes[j].value == c) {
-                for (size_t l = 0; l < strlen(codes[j].code); l++) {
-                    bitbuf[bitcount] = codes[j].code[l];
-                    bitcount++;
-                    if (bitcount == 8) {
-                        fprintf(output, "%c", bit_to_char(bitbuf));
-                        bitcount = 0;
-                        memset(bitbuf, 0, sizeof(unsigned char) * 8);//посмотреть на парашу
-                    }
-                }
+        unsigned char *current_code = code[c];
+
+        for (unsigned int j = 0; current_code[j] != 0; j++) {
+            if (current_code[j] == '1')
+                outbuf[bytepos] |= 128u >> bitpos;
+
+            bitpos++;
+            if (bitpos > 7) {
+                bytepos++;
+                bitpos = 0;
+                outbuf[bytepos] = 0;
             }
         }
     }
-    int nulls = 0;
-    while (bitcount != 8) {
-        for (int i = bitcount; i < 8; i++) {
-            for (int j = 7; j > 0; j--) {
-                bitbuf[j] = bitbuf[j - 1];
-            }
-            bitbuf[0] = '0';
-            bitcount++;
-            nulls++;
-        }
-
-    }
-    if (nulls != 0) {
-        fprintf(output, "%c", bit_to_char(bitbuf));
-    }
-    return nulls;
+    fwrite(outbuf, 1, bytepos + (bitpos > 0 ? 1 : 0), output);
 }
 
-void DFS(Tnode* root, FILE* log, unsigned char* letters) {
-    if (root->left != NULL) {
-        fwrite("L", 1, sizeof(unsigned char), log);
-        DFS(root->left, log, letters);
-    }
-    if (root->right != NULL) {
-        fwrite("R", 1, sizeof(unsigned char), log);
-        DFS(root->right, log, letters);
-    }
-    if (root->value != 0) {
-        letters[count] = root->value;
-        count++;
-    }
-    fwrite("U", 1, sizeof(unsigned char), log);
-}
-
-void make_log(Tnode* root, int nulls, FILE *log) {
-    /*
-    Как устроен log файл:
-     первая строка - струкура девева, остов без букв
-     вторая строка - буквы, которые нужно вставить в дерево
-     последный символ 2 строки - кол-во незначащих бит в последнем байте
-    */
-
-    count = 1;
-    unsigned char letters[256] = {0};
-    letters[0] = '\n';
-
-    DFS(root, log, letters);
-    fprintf(log, "%s", letters);
-
-    fprintf(log, "%d", nulls);
-    fclose(log);
-}
-
-void code(FILE *input, FILE *output, FILE *log) {
-    int signs[256] = {0};
-    int signscount = make_signs(signs, input);
-
-    fseek(input, 0, SEEK_SET);
+void code(FILE *input ,FILE *output) {
+    int letters_count[256] = {0};
+    size_t text_len = make_signs(input, letters_count);
+    fseek(input, 2, SEEK_SET);
 
     Tnode *root = NULL;
-    root = make_huff_tree(signs);
-    if (root == NULL) {// пустой файл
-        return;
-    }
+    root = make_huff_tree(letters_count);
 
-    Tlist codes[signscount];
-    for (int i = 0; i < signscount; i++) {
-        for (int j = 0; j < 8; j++) {
-            codes[i].code[j] = 0;
-        }
-    }
+    unsigned char *outbuf = (unsigned char *) malloc(SIZE_OUT);
+    memset(outbuf, 0, SIZE_OUT);
+    outbuf[0] = (unsigned char) (text_len >> 24);
+    outbuf[1] = (unsigned char) (text_len >> 16);
+    outbuf[2] = (unsigned char) (text_len >> 8);
+    outbuf[3] = (unsigned char) text_len;
+    unsigned int bitpos = 32;
 
-    char path[256] = {'0'};
-    make_table(root, codes, path, 0, signscount);
+    unsigned char *codesTable[256] = {NULL};
 
-    int nulls = coder(codes, input, output);
-    make_log(root, nulls, log);
+    unsigned char path[256] = {'\0'};
+
+    if (text_len > 0)
+        save_huffman_tree(root, &bitpos, outbuf);
+
+    make_huff_table(root, codesTable, path, 0);
+
+    write_encode(input, output, &bitpos, outbuf, codesTable);
+    free(outbuf);
+    delete_tree(root);
 }
 
-Tnode* new_node(unsigned char value) {
+Tnode *read_huffman_tree(unsigned char *outbuf, size_t *total_bitpos) {
     Tnode *new = (Tnode *) malloc(sizeof(Tnode));
-    new->value = value;
-    new->left = NULL;
-    new->right = NULL;
-    new->parent = NULL;
+    unsigned int bit = outbuf[*total_bitpos / 8] & (128u >> (*total_bitpos % 8));
+    (*total_bitpos)++;
+
+    if (bit) { //не лист
+
+        new->left = read_huffman_tree(outbuf, total_bitpos);
+        new->right = read_huffman_tree(outbuf, total_bitpos);
+    } else { //лист
+
+        unsigned int bitpos = *total_bitpos % 8;
+        new->left = NULL;
+        new->right = NULL;
+        if (bitpos == 0) {
+            new->value = outbuf[*total_bitpos / 8];
+        } else {
+            new->value = (unsigned char) (outbuf[*total_bitpos / 8] << bitpos);
+            new->value |= outbuf[*total_bitpos / 8 + 1] >> (8 - bitpos);
+        }
+        *total_bitpos += 8;
+    }
     return new;
 }
 
-Tnode* remake_tree(size_t tree_len,char* tree) {
-    Tnode *root = new_node(0);
-    unsigned char c;
-    size_t i = 0;
-    while (i < tree_len) {
-        c = tree[i];
-        i++;
-        if (c == 255)
-            continue;
-        if (c == 'R') {
-            root->right = new_node(0);
-            Tnode *tmp = root;
-            root = root->right;
-            root->parent = tmp;
-        }
-        if (c == 'L') {
-            root->left = new_node(0);
-            Tnode *tmp = root;
-            root = root->left;
-            root->parent = tmp;
-        }
-        if (c == 'U') {
-            root = root->parent;
-        }
-    }
-    return root;
+size_t read_header(unsigned char *outbuf, size_t *bitpos, size_t message_len) {
+    message_len = outbuf[0] << 24;
+    message_len |= outbuf[1] << 16;
+    message_len |= outbuf[2] << 8;
+    message_len |= outbuf[3];
+    *bitpos = 32;
+
+    return message_len;
 }
 
-void install_letters(Tnode* root, char* tree) {
-    if (root->left != NULL) {
-        install_letters(root->left, tree);
+void write_raw(unsigned char *inpbuf, size_t bitpos, Tnode *root, size_t message_len, FILE *output) {
+    unsigned char outbuf[SIZE_OUT];
+    size_t k;
+    size_t outpos = 0;
+    size_t byte_pos = bitpos / 8;
+    size_t bit_pos = bitpos % 8;
+
+    for (k = 0; k < message_len; k++) {
+        Tnode *node = root;
+
+        while ((node->left != NULL) && (root->right != NULL)) {
+            node = (inpbuf[byte_pos] & (128u >> bit_pos)) ? node->right : node->left;
+            if (7 == bit_pos++) {
+                bit_pos = 0;
+                byte_pos++;
+            }
+        }
+        outbuf[outpos++] = (unsigned char) node->value;
     }
-    if (root->right != NULL) {
-        install_letters(root->right, tree);
-    }
-    if ((root->left == NULL) && (root->right == NULL)) {
-        root->value = tree[count];
-        count++;
+    if (outpos > 0) {
+        fwrite(outbuf, 1, outpos, output);
     }
 }
 
-void char_to_bit(int c, int* buffer) {
-    for (int i = 0, j = 7; c != 0; i++, j--) {
-        buffer[j] = c % 2;
-        c /= 2;
-    }
-}
+void decode(FILE *input ,FILE *output) {
+    unsigned char *outbuf = (unsigned char *) malloc(SIZE_OUT);
+    size_t bitpos = 0;
+    size_t message_len = 0;
 
-void decoder(Tnode *const_root,FILE* input, FILE* output, int nulls) {
-    int buffer[8] = {0};
-    int bitpos = 0;
-    int symbol = 0;
-    Tnode *root = const_root;
-    int is_1_letter = 0;
+    fread(outbuf, 1, SIZE_OUT, input);
 
-    if ((const_root->right == NULL) && (const_root->left == NULL)) {
-        is_1_letter = 1;
-    }
+    message_len = read_header(outbuf, &bitpos, message_len);
 
+    Tnode *root = (message_len == 0) ? NULL : read_huffman_tree(outbuf, &bitpos);
 
-    if (fscanf(input, "%lc", &symbol) != 1)
-        return;
-    char_to_bit(symbol, buffer);
-
-    while (!feof(input)) {
-        if (is_1_letter == 1) {
-            fprintf(output, "%c", root->value);
-            if (buffer[bitpos] == -1) {
-                return;
-            }
-        } else {
-            if (buffer[bitpos] == -1) {
-                return;
-            }
-            if (buffer[bitpos] == 0) {
-                root = root->left;
-            } else {
-                root = root->right;
-            }
-            if ((root->right == NULL) && (root->left == NULL)) {
-                fprintf(output, "%c", root->value);
-                root = const_root;
-            }
-        }
-        bitpos++;
-        if (bitpos == 8) {
-            bitpos = 0;
-            memset(buffer, 0, sizeof(int) * 8);
-            if (fscanf(input, "%lc", &symbol) != 1)
-                return;
-
-            int tmp = fgetc(input);
-            fseek(input, -1, SEEK_CUR);
-            if (tmp == -1) { // если это последний символ потока
-                char_to_bit(symbol, buffer);
-                for (int i = nulls, j = 0; i < 8; i++, j++) {
-                    buffer[j] = buffer[i];
-                }
-                buffer[8 - nulls] = -1;
-            } else {
-                char_to_bit(symbol, buffer);
-            }
-        }
-    }
-}
-
-void decode(FILE* input, FILE* output, FILE *log) {
-
-    char tree[1000] = {0};
-    if (fscanf(log, "%s", tree) != 1)
-        return;
-    size_t tree_len = strlen(tree);
-
-    Tnode *root = remake_tree(tree_len - 1, tree);
-
-    for (size_t i = 0; i < tree_len; i++) {
-        tree[i] = 0;
-    }
-    fseek(log, 1, SEEK_CUR);
-    if (fread(tree, 1, 1000, log) == 9999){
-        return;
-    }
-
-    int nulls = tree[strlen(tree) - 1] - 48;
-
-    count = 0;
-    install_letters(root, tree);
-
-    decoder(root, input, output, nulls);
-    fclose(log);
-    fclose(input);
-    fclose(output);
+    write_raw(outbuf, bitpos, root, message_len, output);
+    free(outbuf);
+    delete_tree(root);
 }
