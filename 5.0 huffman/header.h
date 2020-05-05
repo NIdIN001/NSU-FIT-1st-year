@@ -26,7 +26,7 @@ static int count = 0;
 int make_signs(int* signs,FILE* input);
 void make_table(Tnode *root, Tlist codes[],char path[256], int level,int signscount);
 Tnode* make_huff_tree(int* signs);
-unsigned char bit_to_char(unsigned char bitbuf[], int bitcount);
+unsigned char bit_to_char(unsigned char bitbuf[]);
 int coder(Tlist* codes,FILE* input,FILE* output);
 void DFS(Tnode* root, FILE* log, unsigned char* letters);
 void make_log(Tnode* root, int nulls, FILE *log);
