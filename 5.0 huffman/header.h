@@ -29,15 +29,15 @@ Tnode* make_huff_tree(int* signs);
 unsigned char bit_to_char(unsigned char bitbuf[], int bitcount);
 int coder(Tlist* codes,FILE* input,FILE* output);
 void DFS(Tnode* root, FILE* log, unsigned char* letters);
-void make_log(Tnode* root, int nulls);
-void code(FILE *input, FILE *output);
+void make_log(Tnode* root, int nulls, FILE *log);
+void code(FILE *input, FILE *output, FILE *log);
 
 Tnode* new_node(unsigned char value);
-Tnode* remake_tree(size_t tree_len, unsigned char* tree);
-void install_letters(Tnode* root, unsigned char* tree);
+Tnode* remake_tree(size_t tree_len,char* tree);
+void install_letters(Tnode* root,char* tree);
 void char_to_bit(int c, int* buffer);
 void decoder(Tnode *const_root,FILE* input, FILE* output, int nulls);
-void decode(FILE* input, FILE* output);
+void decode(FILE* input, FILE* output, FILE *log);
 
 
 #endif //LABA5_HEADER_H
