@@ -1,43 +1,34 @@
 //
-// Created by Станислав Уточкин on 18.04.2020.
+// Created by Станислав Уточкин on 06.05.2020.
 //
 
 #ifndef LABA5_HEADER_H
 #define LABA5_HEADER_H
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <math.h>
+
+#define SIZE_OUT 1024*700
 
 typedef struct node {
     unsigned int weight;
-    unsigned char value;
+    unsigned int value;
     struct node *left;
     struct node *right;
-    struct node *parent;
 }Tnode;
-typedef struct list{
-    unsigned char value;
-    char code[8];
-}Tlist;
 
-static int count = 0;
 
-int make_signs(int* signs,FILE* input);
-void make_table(Tnode *root, Tlist codes[],char path[256], int level,int signscount);
+size_t make_signs(FILE* input, int* letters_count);
+void delete_tree(Tnode* root);
 Tnode* make_huff_tree(int* signs);
-unsigned char bit_to_char(unsigned char bitbuf[]);
-int coder(Tlist* codes,FILE* input,FILE* output);
-void DFS(Tnode* root, FILE* log, unsigned char* letters);
-void make_log(Tnode* root, int nulls, FILE *log);
-void code(FILE *input, FILE *output, FILE *log);
-
-Tnode* new_node(unsigned char value);
-Tnode* remake_tree(size_t tree_len,char* tree);
-void install_letters(Tnode* root,char* tree);
-void char_to_bit(int c, int* buffer);
-void decoder(Tnode *const_root,FILE* input, FILE* output, int nulls);
-void decode(FILE* input, FILE* output, FILE *log);
-
+void save_huffman_tree(Tnode* root, unsigned int* total_bitpos, unsigned char* outbuf);
+void make_huff_table(Tnode *root, unsigned char *code[256], unsigned char path[256], unsigned int level);
+void write_encode(FILE *input, FILE *output, unsigned int *total_bitpos, unsigned char *outbuf, unsigned char *code[256]);
+void code(FILE *input ,FILE *output);
+Tnode *read_huffman_tree(unsigned char *outbuf, size_t *total_bitpos);
+size_t read_header(unsigned char *outbuf, size_t *bitpos, size_t message_len);
+void write_raw(unsigned char *inpbuf, size_t bitpos, Tnode *root, size_t message_len, FILE *output);
+void decode(FILE *input ,FILE *output);
 
 #endif //LABA5_HEADER_H
