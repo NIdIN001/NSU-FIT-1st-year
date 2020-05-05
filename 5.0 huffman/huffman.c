@@ -79,14 +79,14 @@ unsigned char bit_to_char(unsigned char bitbuf[], int bitcount) {
     unsigned char result = 0;
     for (int i = 0, j = 7; i < 8; i++, j--) {
         if (bitbuf[i] == '1') {
-            result = result + pow(2, j);
+            result = (unsigned char)(result + pow(2, j));
         }
     }
     return result;
 }
 
 int coder(Tlist* codes,FILE* input,FILE* output) {
-    char bitbuf[8] = {0};
+    unsigned char bitbuf[8] = {0};
     int bitcount = 0;
     int c;
     while (!feof(input)) {
@@ -141,19 +141,13 @@ void DFS(Tnode* root, FILE* log, unsigned char* letters) {
     fwrite("U", 1, sizeof(unsigned char), log);
 }
 
-void make_log(Tnode* root, int nulls) {
+void make_log(Tnode* root, int nulls, FILE *log) {
     /*
     Как устроен log файл:
      первая строка - струкура девева, остов без букв
      вторая строка - буквы, которые нужно вставить в дерево
      последный символ 2 строки - кол-во незначащих бит в последнем байте
     */
-    FILE *log = NULL;
-    log = fopen("log.txt", "wb");
-    if (log == NULL) {
-        printf("Can't open log file");
-        return;
-    }
 
     count = 1;
     unsigned char letters[256] = {0};
@@ -166,7 +160,7 @@ void make_log(Tnode* root, int nulls) {
     fclose(log);
 }
 
-void code(FILE *input, FILE *output) {
+void code(FILE *input, FILE *output, FILE *log) {
     int signs[256] = {0};
     int signscount = make_signs(signs, input);
 
@@ -189,7 +183,7 @@ void code(FILE *input, FILE *output) {
     make_table(root, codes, path, 0, signscount);
 
     int nulls = coder(codes, input, output);
-    make_log(root, nulls);
+    make_log(root, nulls, log);
 }
 
 Tnode* new_node(unsigned char value) {
@@ -201,7 +195,7 @@ Tnode* new_node(unsigned char value) {
     return new;
 }
 
-Tnode* remake_tree(size_t tree_len, unsigned char* tree) {
+Tnode* remake_tree(size_t tree_len,char* tree) {
     Tnode *root = new_node(0);
     unsigned char c;
     int i = 0;
@@ -229,7 +223,7 @@ Tnode* remake_tree(size_t tree_len, unsigned char* tree) {
     return root;
 }
 
-void install_letters(Tnode* root, unsigned char* tree) {
+void install_letters(Tnode* root, char* tree) {
     if (root->left != NULL) {
         install_letters(root->left, tree);
     }
@@ -261,7 +255,7 @@ void decoder(Tnode *const_root,FILE* input, FILE* output, int nulls) {
     }
 
 
-    if(fscanf(input, "%c", &symbol) != 1)
+    if (fscanf(input, "%lc", &symbol) != 1)
         return;
     char_to_bit(symbol, buffer);
 
@@ -289,7 +283,7 @@ void decoder(Tnode *const_root,FILE* input, FILE* output, int nulls) {
         if (bitpos == 8) {
             bitpos = 0;
             memset(buffer, 0, sizeof(int) * 8);
-            if(fscanf(input, "%c", &symbol) != 1)
+            if (fscanf(input, "%lc", &symbol) != 1)
                 return;
 
             int tmp = fgetc(input);
@@ -307,10 +301,9 @@ void decoder(Tnode *const_root,FILE* input, FILE* output, int nulls) {
     }
 }
 
-void decode(FILE* input, FILE* output) {
-    FILE *log = fopen("log.txt", "rb");
+void decode(FILE* input, FILE* output, FILE *log) {
 
-    unsigned char tree[1000] = {0};
+    char tree[1000] = {0};
     if (fscanf(log, "%s", tree) != 1)
         return;
     size_t tree_len = strlen(tree);
