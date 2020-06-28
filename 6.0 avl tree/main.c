@@ -1,8 +1,7 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "header.h"
 
-int main() {
+int main(void) {
     Tnode *root = NULL;
     int nodes = 0;
     if (scanf("%d", &nodes) != 1)
@@ -16,5 +15,7 @@ int main() {
     }
 
     printf("%d", Height(root));
-    Delete_tree(root);
+    if (Height(root) != 0)
+        Delete_tree(root);
+    return 0;
 }
