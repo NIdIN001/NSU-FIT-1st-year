@@ -1,39 +1,32 @@
 #include "header.h"
 
-int compare(const void* a, const void* b) {
-    return ((((Tnode *) a)->leight) - (((Tnode *) b)->leight));
+int compare(const void *a, const void *b) {
+    return ((const Tedge *) a)->weight - ((const Tedge *) b)->weight;
 }
 
-struct result frame(Tnode edges[],Tnode out[], int lines, int vertex) {
-
-    qsort(edges, lines, sizeof(Tnode), compare);
-
-    int color[vertex];
-    for (int i = 0; i < vertex; i++) {
-        color[i] = i;
+int kruskal(Tedge *ways, unsigned number_ways, unsigned number_tops, Tedge *result) {
+    qsort(ways, number_ways, sizeof(Tedge), compare);
+    unsigned *colour = malloc(sizeof(unsigned) * (number_tops + 1));
+    if (colour == NULL) {
+        return -1;
     }
-
-    int count = 0;
-
-    for (int i = 0; i < lines; i++) {
-        if (color[edges[i].fp - 1] != color[edges[i].sp - 1]) {
-            out[count] = edges[i];
-            count++;
-            for (int j = 0; j < vertex; j++) {
-                if ((color[j] == color[edges[i].sp - 1]) || (color[j] == color[edges[i].fp - 1])) {
-                    color[j] = color[edges[i].fp - 1];
-                    color[j] = color[edges[i].sp - 1];
+    for (unsigned i = 0; i <= number_tops; ++i) {
+        colour[i] = i;
+    }
+    int size_result = 0;
+    for (unsigned i = 0; i < number_ways; ++i) {
+        if (colour[ways[i].begin] != colour[ways[i].end]) {
+            result[size_result] = ways[i];
+            ++size_result;
+            unsigned new_colour = colour[ways[i].begin];
+            unsigned old_colour = colour[ways[i].end];
+            for (unsigned j = 0; j <= number_tops; ++j) {
+                if (colour[j] == old_colour) {
+                    colour[j] = new_colour;
                 }
             }
         }
     }
-    int is_ok = 0;
-    for (int i = 1; i < vertex; i++) {
-        if (color[0] != color[i])
-            is_ok++;
-    }
-    struct result result;
-    result.count = count;
-    result.is_ok = is_ok;
-    return result;
+    free(colour);
+    return size_result;
 }
