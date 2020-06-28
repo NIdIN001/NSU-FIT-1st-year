@@ -1,12 +1,9 @@
-//
-// Created by Станислав Уточкин on 27.04.2020.
-//
 #include "header.h"
-void dijkstra(int count_vertex, int from, unsigned int edges[][count_vertex],unsigned int* d, int* result) {
 
-    int visited[count_vertex];
+void dijkstra(int count_vertex, int from, unsigned int** edges,unsigned int* d, int* result) {
+
+    int *visited = (int *) malloc(sizeof(int) * count_vertex);
     memset(visited, 0, sizeof(int) * count_vertex);
-
 
     int current_vertex = from;
     int counter_of_vertex = 0;
@@ -14,8 +11,7 @@ void dijkstra(int count_vertex, int from, unsigned int edges[][count_vertex],uns
     while (counter_of_vertex < count_vertex) {
         visited[current_vertex] = 1; //поставил отметку что посетил
 
-
-        unsigned int min_length = INT_MAX * 2 + 1;;
+        unsigned int min_length = UINT_MAX;
 
         for (int i = 0; i < count_vertex; i++) {
             if (edges[current_vertex][i] != 0) {
@@ -35,6 +31,5 @@ void dijkstra(int count_vertex, int from, unsigned int edges[][count_vertex],uns
         }
         counter_of_vertex++;
     }
+    free(visited);
 }
-
-
