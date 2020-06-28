@@ -1,55 +1,66 @@
+#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <limits.h>
 #include "header.h"
 
-int main() {
-    int vertex = 0;
-    if (scanf("%d", &vertex) != 1) {
-        return 1;
-    }
-    int lines = 0;
-    if (scanf("%d", &lines) != 1) {
-        return 1;
-    }
-
-    if ((vertex < 0) || (vertex > 5000)) {
-        printf("bad number of vertices");
-        return 1;
-    }
-    if ((lines < 0) || (lines > ((vertex * (vertex + 1)) / 2))) {
-        printf("bad number of edges");
-        return 1;
-    }
-
-    Tnode edges[lines];
-    memset(edges, 0, sizeof(Tnode) * lines);
-
-    for (int i = 0; i < lines; i++) {
-        if (scanf("%d%d%d", &edges[i].fp, &edges[i].sp, &edges[i].leight) != 3) {
-            printf("bad number of lines");
-            return 1;
-        }
-        if ((edges[i].leight < 0) || (edges[i].leight > INT_MAX)) {
-            printf("bad length");
-            return 1;
-        }
-        if ((edges[i].fp < 1) || (edges[i].fp > vertex) || (edges[i].sp < 1) || (edges[i].sp > vertex)) {
-            printf("bad vertex");
-            return 1;
-        }
-    }
-
-    Tnode out[lines];
-    memset(out, 0, sizeof(Tnode) * lines);
-    struct result result = frame(edges, out, lines, vertex);
-
-    if (result.is_ok == 0) {
-        for (int i = 0; i < result.count; i++) {
-            printf("%d %d\n", out[i].fp, out[i].sp);
-        }
-    } else {
-        printf("no spanning tree");
+int main(void) {
+    unsigned n;
+    unsigned m;
+    if (scanf("%u%u", &n, &m) < 2) {
+        printf("bad number of lines");
         return 0;
     }
+    if (n > 5000) {
+        printf("bad number of vertices");
+        return 0;
+    }
+    if (m > (n * (n + 1) / 2)) {
+        printf("bad number of edges");
+        return 0;
+    }
+    Tedge *ways = malloc(sizeof(Tedge) * m);
+    if (ways == NULL) {
+        return 0;
+    }
+    for (unsigned i = 0; i < m; i++) {
+        if (scanf("%u%u%d", &ways[i].begin, &ways[i].end, &ways[i].weight) < 3) {
+            printf("bad number of lines");
+            free(ways);
+            return 0;
+        }
+        if (ways[i].begin > n || ways[i].end > n) {
+            puts("bad vertex");
+            free(ways);
+            return 0;
+        }
+        if (ways[i].weight < 0 || ways[i].weight > INT_MAX) {
+            puts("bad length");
+            free(ways);
+            return 0;
+        }
+    }
+    Tedge *result = malloc(sizeof(Tedge) * m);
+    if (result == NULL) {
+        free(ways);
+        return 0;
+    }
+    int size_result = kruskal(ways, m, n, result);
+    if (size_result == -1) {
+        free(ways);
+        free(result);
+        return 0;
+    }
+    if (size_result + 1 < (int) n || (size_result == 0 && n == 0)) {
+        puts("no spanning tree");
+        free(ways);
+        free(result);
+        return 0;
+    }
+    for (int i = 0; i < size_result; ++i) {
+        printf("%u %u\n", result[i].begin, result[i].end);
+    }
+    free(ways);
+    free(result);
+
+    return 0;
 }
