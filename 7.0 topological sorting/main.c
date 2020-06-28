@@ -1,72 +1,58 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
 #include "header.h"
 
-int main() {
-    int vertex = -1;
-    if (scanf("%d", &vertex) != 1) {
+int main(void) {
+    int countOfVertex = 0;
+    int countOfEdge = 0;
+
+    if (scanf("%d", &countOfVertex) == EOF) {
         printf("bad number of lines");
         return 0;
     }
-    int lines = -1;
-    if (scanf("%d", &lines) != 1) {
+    if (scanf("%d", &countOfEdge) == EOF) {
         printf("bad number of lines");
         return 0;
     }
 
-    if ((vertex < 0) || (vertex > 1000)) {
+    if (countOfVertex < 0 || countOfVertex > 1000) {
         printf("bad number of vertices");
         return 0;
     }
-
-    if ((lines < 0) || (lines > (vertex * (vertex - 1) / 2))){
+    if (countOfEdge < 0 || countOfEdge > countOfVertex * (countOfVertex - 1) / 2) {
         printf("bad number of edges");
         return 0;
     }
 
-    int array[vertex][vertex];
-    memset(array, 0, vertex * vertex * sizeof(int));
+    Vector *vector = (Vector *) calloc(countOfVertex, sizeof(Vector));
+    initializeVector(vector, countOfVertex);
 
-    for (int i = 0; i < lines; i++) {
-        int a = -1;
-        int b = 0;
-        if (scanf("%d%d", &a, &b) != 2){
+    int beginVertex = 0;
+    int endVertex = 0;
+    int starterVertex = 0;
+    for (int i = 0; i < countOfEdge; i++) {
+        if (scanf("%d", &beginVertex) == EOF || scanf("%d", &endVertex) == EOF) {
             printf("bad number of lines");
+            removeVector(&vector, countOfVertex);
             return 0;
         }
-        if (a == b) {
-            printf ("impossible to sort");
-            return 0;
-        }
-        if ((a > vertex) || (b > vertex) || (a < 0) || (b < 0)){
+        if (beginVertex < 1 || beginVertex > countOfVertex || endVertex < 1 || endVertex > countOfVertex) {
             printf("bad vertex");
+            removeVector(&vector, countOfVertex);
             return 0;
         }
+        if (i == 0)
+            starterVertex = beginVertex - 1;
 
-        array[a - 1][b - 1] = 1; // тк первый элемент 0-0 я деляю его 1-1, тк так привычнее
+        pushInVector(&vector[beginVertex - 1], endVertex - 1);
     }
+    int *output;
+    output = (int *) calloc(countOfVertex, sizeof(int));
 
-    int visited[vertex];
-    memset(visited, 0, vertex * sizeof(int));
-    create();
+    sortGraph(vector, countOfVertex, starterVertex, output);
+    printGraph(output, countOfVertex);
 
-    for (int i = 0; i < vertex; i++) {       //Нам важно, чтобы DFS посетил все вершины графа,
-        if (visited[i] == 0) {               //а не только достижимые из нулевой. Поэтому мы явно
-            DFS(i, visited, vertex, array);  //вызываем его для всех, ещё не посещённых ранее.
-        }
-    }
-    
-    for (int i = 0; i < vertex; i++) {
-        printf(" %d", pop() + 1);
-    }
-
-/*
-    for (int i = 0; i < vertex; i++) {
-        for (int j = 0; j < vertex; j++) {
-            printf(" %d", array[j][i]);
-        }
-        printf("\n");
-    }
-*/
+    free(output);
+    removeVector(&vector, countOfVertex);
+    return 0;
 }
