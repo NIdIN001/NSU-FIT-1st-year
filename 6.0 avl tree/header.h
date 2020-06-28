@@ -1,7 +1,3 @@
-//
-// Created by Станислав Уточкин on 28.03.2020.
-//
-
 #ifndef LABA6_HEADER_H
 #define LABA6_HEADER_H
 
