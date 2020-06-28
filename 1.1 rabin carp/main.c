@@ -1,44 +1,91 @@
 #include <stdio.h>
 #include <string.h>
-#include "header.h"
 
-int main(int argc, char *argv[]) {
-    char example[18];
-    char text[1000];
+int power(int b,int n) {
+    int a = 1;
+    while (n != 0) {
+        a *= b;
+        n--;
+    }
+    return a;
+}
 
-    FILE *input = NULL;
+int hash(unsigned char* str, size_t first, size_t last) {
+    int hash = 0;
+    for (size_t i = first; i <= last; i++) {
+        hash += (str[i] % 3) * (power(3, i));
+    }
+    return hash;
+}
 
-    if (argc == 2)
-        input = fopen(argv[1], "rt");
-    //input = fopen("input.txt", "rb");
+int Check(unsigned char* word, unsigned char* string, const int lengthWord, int fromPosition) {
 
-    if (input == NULL) {
-        if (fgets(example, 18, stdin) == 0)
-            return 0;
-        if (fgets(text, 1000, stdin) == 0)
-            return 0;
-    } else {
-        if (fgets(example, 18, input) == 0)
-            return 0;
-        if (fgets(text, 1000, input) == 0) {
-            printf("0");
+    for (int i = 0; i < lengthWord; ++i) {
+        if (word[i] == string[i]) {
+            printf("%d ", fromPosition + i + 1);
+        } else {
+
+            printf("%d ", fromPosition + i + 1);
+
             return 0;
         }
     }
+    return 1;
+}
 
-    if (example[strlen(example) - 1] == '\n')
-        example[strlen(example) - 1] = '\0';
-    if (text[strlen(text) - 1] == '\n')
-        text[strlen(text) - 1] = '\0';
+int main() {
+    const int maxlengthPattern = 16;
 
-    size_t ex_len = strlen(example);
-    size_t text_len = strlen(text);
+    unsigned char pattern[maxlengthPattern + 1];
+    unsigned char string[maxlengthPattern + 1];
+    int ch;
+    int d = 0;
+    do {
+        ch = getchar();
 
-    if ((strlen(text) == 0) || (strlen(example) == 0))
-        return 0;
+        pattern[d] = ch;
+        d++;
+    } while (ch != '\n');
+    d--;
+    pattern[d] = '\0';
+    int lengthPattern = d;
 
-    RabinCarp(example, text, ex_len, text_len);
+    int hashOfWord = hash(pattern,0 ,lengthPattern);
 
-    if (input != NULL)
-        fclose(input);
+    for (int j = 0; j < lengthPattern; j++) {
+        ch = getchar();
+        if (ch == EOF) {
+            printf("0\n");
+            return 0;
+        }
+        string[j] = ch;
+        string[j + 1] = '\0';
+    }
+
+    printf("%d ", hashOfWord);
+
+
+    int hashOfString = hash(string,0 ,lengthPattern);
+    int k = 0;
+
+    int factor = power(3, lengthPattern - 1);
+    while (1) {
+        if (hashOfWord == hashOfString) {
+            Check(pattern, string, lengthPattern, k);
+
+        }
+        int c = getchar();
+        if (c == EOF) {
+            break;
+        }
+        hashOfString = ((hashOfString - string[0] % 3) / 3 + ((unsigned char) c % 3) * factor);
+        for (int i = 0; i < lengthPattern - 1; i++) {
+            string[i] = string[i + 1];
+        }
+        string[lengthPattern - 1] = c;
+
+        k++;
+    }
+
+    return 0;
 }
