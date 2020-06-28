@@ -1,24 +1,19 @@
-//
-// Created by Станислав Уточкин on 28.03.2020.
-//
+#ifndef MYASO_HEADER_H
+#define MYASO_HEADER_H
 
-#ifndef LABA7_HEADER_H
-#define LABA7_HEADER_H
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
 
-typedef struct Node{
-    int value;
-    struct Node* next;
-}Node;
+typedef struct node {
+    int *data;
+    int size;
+    int capacity;
+}Vector;
 
-Node* first;
-Node* last;
-
-void push(int value);
-int pop();
-
-void DFS(int x,int* visited,int vertex, int array[][vertex]);
-
-#endif //LABA7_HEADER_H
+void initializeVector(Vector* vector, int countOfVertex);
+void pushInVector(Vector* vector, int vertex);
+void sort(Vector* vector, int index, int* color_table, int* output, int* sizeOutput);
+void sortGraph(Vector* vector, int countOfVertex, int starterVertex, int* output);
+void printGraph(int* output, int countOfVertex);
+void removeVector(Vector** vector, int countOfVertex);
+#endif //MYASO_HEADER_H
