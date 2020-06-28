@@ -1,72 +1,31 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "header.h"
 
-int main(int argc, char **argv) {
-    int docode;
-    FILE *output;
-    FILE *input;
-    if (argc > 3) {
-        if (strcmp(argv[1], "c") == 0) {
-            docode = 1;
-        } else if (strcmp(argv[1], "d") == 0) {
-            docode = 0;
-        } else {
-            printf("c|d output input");
-            return 1;
-        }
-        input = fopen(argv[3], "rb");
-        output = fopen(argv[2], "wb");
-    } else {
-
-        argv[2] = "out.txt";
-        argv[3] = "in.txt";
-
-        input = fopen(argv[3], "rb");
-        output = fopen(argv[2], "wb");
-        char act[4];
-        if (fgets(act, 4, input) == NULL) {
-            printf("bad input\n");
-            return 0;
-        }
-        if (strcmp(act, "c\n") == 0) {
-            docode = 1;
-        } else if (strcmp(act, "d\n") == 0) {
-            docode = 0;
-        } else {
-            return 0;
-        }
-    }
-
-    if (output == NULL) {
-        printf("cannot open file %s\n", argv[2]);
-        return 1;
-    }
-    if (input == NULL) {
+int main(void) {
+    int todo = 0;
+    FILE *output,
+            *input;
+    input = fopen("in.txt", "rb");
+    output = fopen("out.txt", "wb");
+    char act[4];
+    if (!fgets(act, 4, input)) {
+        fclose(input);
         fclose(output);
-        printf("cannot open file %s\n", argv[3]);
-        return 1;
+        return 0;
     }
-    if (docode)
-        code(input, output);
+    if (strcmp(act, "c\r\n") == 0) {
+        todo = 1;
+    } else if (strcmp(act, "d\r\n") == 0) {
+        todo = 0;
+    }
+
+    if (todo)
+        encode(input, output);
     else
         decode(input, output);
     fclose(output);
     fclose(input);
-    return EXIT_SUCCESS;
+    return 0;
 }
-
-/*
-int main () {
-    //FILE *input = fopen("in.txt", "rt");
-    //FILE *output = fopen("out.txt", "wt");
-
-    FILE *input = fopen("in.txt", "wt");
-    FILE *output = fopen("out.txt", "rt");
-    //code(input, output);
-    decode(output, input);
-    fclose(input);
-    fclose(output);
-}
-*/
